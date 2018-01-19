@@ -11,6 +11,7 @@ class GameOfLife:
     overpopulation_count = 4
     underpopulation_count = 2
     birth_count = 3
+    rects = []
 
 
     def __init__(self, width, height):
@@ -22,7 +23,7 @@ class GameOfLife:
             self.map_population.append([False] * self.map_height)
 
 
-    def randomize_population(self, probability_life=0.2):
+    def randomize_population(self, probability_life=0.05):
         individuals_alive = round(self.map_height * self.map_width * probability_life)
         print("initializing", individuals_alive, "alive individuals")
         for i in range(individuals_alive):
@@ -59,6 +60,10 @@ class GameOfLife:
                     self.map_population[i][j] = False
 
     def draw(self, w):
+
+        for rect in self.rects:
+            w.delete(rect)
+
         width = 1000 / self.map_width
         height = 1000 / self.map_height
         for i in range(self.map_width):
@@ -66,7 +71,7 @@ class GameOfLife:
                 color = "black"
                 if self.map_population[i][j]:
                     color = "green"
-                w.create_rectangle(i*width, j*height, (i+1)*width, (j+1)*height, fill=color)
+                self.rects.append(w.create_rectangle(i*width, j*height, (i+1)*width, (j+1)*height, fill=color))
 
 gol = GameOfLife(100, 100)
 
@@ -83,7 +88,6 @@ def generation():
     gol.evolve()
     gol.draw(w)
     master.update()
-    print("LOL")
 
 def update(event=None):
     global w, master, generating
@@ -92,7 +96,7 @@ def update(event=None):
         print("generating:", generating)
     if generating:
         generation()
-        master.after(100, update)
+        master.after(25, update)
 
 master.bind( "<space>", update)
 master.mainloop()
